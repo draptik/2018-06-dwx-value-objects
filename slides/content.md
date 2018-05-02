@@ -1,10 +1,9 @@
-# Title of presentation
+# Value Objects on Steroids
 
-## Subtitle
 
-Homer Simpson
+Patrick Drechsler
 
-1.1.2019
+25.4.2018
 
 x---
 
