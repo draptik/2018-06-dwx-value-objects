@@ -42,11 +42,24 @@ Note:
 x---
 
 ```csharp
-class Konto
+public class Konto
 {
-    void Einzahlen(int betrag) { /* ... */ }
-}
+    public int Kontostand { get; private set; } = 0;
 
-var konto = new Konto();
-konto.Einzahlen(-10);
+    public void Einzahlen(int betrag) 
+    { 
+        this.Kontostand += betrag;
+    }
+}
+```
+
+```csharp
+[Fact]
+public void Kontostand_ist_nach_Einzahlung_groesser_als_davor()
+{
+    var konto = new Konto();
+    var before = konto.Kontostand;
+    konto.Einzahlen(-10);
+    konto.Kontostand.Should().BeGreaterThan(before);
+}
 ```
