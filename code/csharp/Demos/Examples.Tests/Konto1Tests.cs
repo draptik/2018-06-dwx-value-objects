@@ -4,13 +4,13 @@ using Xunit;
 
 namespace Examples.Tests
 {
-    public class KontoTests
+    public class Konto1Tests
     {
         [Theory]
-        [InlineData(0)]
         [InlineData(1)]
         [InlineData(10)]
-        [InlineData(-10)]
+        // [InlineData(0)] // <-- Problem?
+        // [InlineData(-10)] // <-- Problem?
         public void Kontostand_ist_nach_Einzahlung_groesser_als_davor(int geld)
         {
             // Arrange

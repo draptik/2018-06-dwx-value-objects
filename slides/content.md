@@ -116,3 +116,51 @@ public class Geld
 - Es kann nur gültige Geld-Objekte geben<!-- .element: class="fragment" data-fragment-index="1" -->
 
 **Immutability**<!-- .element: class="fragment" data-fragment-index="2" -->
+
+Note:
+- schauen wir nochmal auf unsere Konto-Klasse...
+
+x---
+
+## Immutability
+
+```csharp
+public class Konto
+{
+    public Geld Kontostand { get; private set; } = new Geld(0);
+
+    public void Einzahlen(Geld geld) 
+    { 
+        // Kontostand ist immer ein neues Objekt (`new Geld(...)`)
+        this.Kontostand = new Geld(this.Kontostand.Value + geld.Value);
+    }
+}
+```
+
+Note:
+Einzahlung kann ungültigen Wert liefern: Dazu kommen wir spaeter!
+
+x--
+
+```csharp
+[Fact]
+public void Geld_schmeisst_wenn_Betrag_zu_gross()
+{
+    var max = Int32.MaxValue;
+    
+    Action action = () => new Geld(max + 1);
+    
+    action.Should().Throw<InvalidGeldValueException>();
+}
+```
+
+- vernünftige Exception
+
+x---
+
+Geld ist mehr als nur Betrag
+
+`1EUR != 1USD != 1BC`
+
+Note: TODO Replace with images of coins/bills/bitcoin-logo
+
