@@ -15,17 +15,14 @@ x---
 - aktuelle Schwerpunkte: DDD, FP, Cloud
 - Softwerkskammer
 
-x---
-
-## Wo geht die Reise hin?
+Note: 
+Wo geht die Reise hin?
 
 - Was ist ein Value Object?
 - Wie nutzt man Value Objects?
 - Fallstricke
 - Killer Features // <- In die Liste aufnehmen?
 - On Steroids
-
-Note: Diese Folie zeigen?
 
 x---
 
@@ -48,7 +45,7 @@ public class Konto
 
     public void Einzahlen(int geld) 
     { 
-        this.Kontostand += geld;
+        Kontostand += geld;
     }
 }
 ```
@@ -77,6 +74,7 @@ x---
 
 Note:
 - Im Zitat steckt schon ein Lösungsansatz ('making a new class')
+- Outside-In Approach: Aendern wir zuerst alle Signaturen in der Konto-Klasse...
 
 x---
 
@@ -87,18 +85,18 @@ public class Konto
 
     public void Einzahlen(Geld geld) 
     { 
-        this.Kontostand = new Geld(this.Kontostand.Value + geld.Value);
+        Kontostand = new Geld(Kontostand.Betrag + geld.Betrag);
     }
 }
 ```
-Wie sieht die Klasse Geld aus?
+Geld Klasse existiert noch nicht...<!-- .element: class="fragment" data-fragment-index="1" -->
 
 x---
 
 ```csharp
 public class Geld
 {
-    public int Value { get; }
+    public int Betrag { get; }
 
     public Geld(int betrag) 
     {
@@ -106,7 +104,7 @@ public class Geld
         {
             throw new InvalidGeldException(betrag.ToString());
         }
-        this.Value = geld;
+        this.Betrag = betrag;
     }
 
     private bool IsValid(int betrag) => betrag >= 0;
@@ -131,8 +129,8 @@ public class Konto
 
     public void Einzahlen(Geld geld) 
     { 
-        // Kontostand ist immer ein neues Objekt (`new Geld(...)`)
-        this.Kontostand = new Geld(this.Kontostand.Value + geld.Value);
+        // Kontostand ist immer ein neues, gültiges Objekt
+        Kontostand = new Geld(Kontostand.Betrag + geld.Betrag);
     }
 }
 ```
@@ -150,11 +148,11 @@ public void Geld_schmeisst_wenn_Betrag_zu_gross()
     
     Action action = () => new Geld(max + 1);
     
-    action.Should().Throw<InvalidGeldValueException>();
+    action.Should().Throw<InvalidGeldException>();
 }
 ```
 
-- vernünftige Exception
+vernünftige Exception!
 
 x---
 
@@ -164,3 +162,172 @@ Geld ist mehr als nur Betrag
 
 Note: TODO Replace with images of coins/bills/bitcoin-logo
 
+x---
+
+Fügen wir 
+- **Währung** 
+- zur Klasse **Geld** hinzu...
+
+x---
+
+```csharp
+public class Geld
+{
+    public int Betrag { get; }
+    public Waehrung Waehrung { get; } // <---------------- NEU
+
+    public Geld(int betrag, Waehrung waehrung) 
+    {
+        if (!IsValid(betrag, waehrung))
+        {
+            throw new InvalidGeldException();
+        }
+        this.Betrag = betrag;
+        this.Waehrung = waehrung; // <-------------------- NEU
+    }
+
+    private bool IsValid(int betrag, Waehrung waehrung) 
+        => betrag >= 0 && waehrung != Waehrung.Undefined;
+}
+```
+- kann nicht verändert werden
+- ungültige Geld Objekte gibt es nicht
+
+Note: Waehrung ist eine Enum
+TODO Example Code
+
+x---
+
+```csharp
+[Fact]
+public void Geld_ist_gleich_Geld()
+{
+    var geld1 = new Geld(1, Waehrung.EUR);
+    var geld2 = new Geld(1, Waehrung.EUR);
+
+    geld1.Should().BeEqualTo(geld2); // <-- Fails!
+}
+```
+
+AUTSCH!
+
+Da müssen wir was machen
+
+x---
+
+## Exkurs: Vergleichbarkeit
+
+"`Equal`"
+
+x--
+### Equality by reference
+
+![noborder-equality-by-reference](resources/eq1.png)
+
+TODO Geld gleich Geld: schlecht
+
+x--
+### Equality by identifier
+
+![noborder-equality-by-identifier](resources/eq2.png)
+
+TODO Geld gleich Geld: schlecht
+
+x--
+### Equality by structure
+
+![noborder-equality-by-structure](resources/eq3.png)
+
+TODO Geld gleich Geld: Volltreffer!
+
+x---
+
+```csharp
+public class Geld
+{
+    // ...
+
+    public override bool Equals(Geld other) 
+    {
+        return 
+            other.Betrag == this.Betrag &&
+            other.Waehrung == this.Waehrung;
+    }    
+}
+```
+```csharp
+[Fact]
+public void Geld_ist_gleich_Geld()
+{
+    var geld1 = new Geld(1, Waehrung.EUR);
+    var geld2 = new Geld(1, Waehrung.EUR);
+
+    geld1.Should().BeEqual(geld2); // <-- greenh
+}
+```
+
+Korrekte Vergleichbarkeit!
+
+x---
+
+### "Geld" ist jetzt stabil
+
+- "Geld" ist nicht im nachhinein änderbar
+- "Geld" ist vergleichbar
+
+x---
+
+## Value Object
+- Ausdrucksstärke: 
+    - Expressiveness
+- Unveränderlichbarkeit: 
+    - Immutability
+- Attributbasiertevergleichbarkeit: 
+    - Equality by structure
+
+x---
+
+## Es geht nicht nur ums Geld...
+
+x---
+
+- TODO Erst zeigen, wie Abstract VO geht
+- TODO ODER Ganz viel Logik (on steroids) innerhalb eines VO
+
+x---
+
+Geld ist nicht alles!
+
+```csharp
+public class Konto
+{
+    public Geld Kontostand { /* ... */ };
+    public Email KontaktEmail { /* ... */ }
+}
+```
+
+x---
+
+```csharp
+public class Kunde
+{
+    public Email KontaktEmail { get; set; }
+}
+```
+
+```csharp
+public class Email : ValueObject<Email>
+{
+    public string Value { get; }
+    public Email(string input)
+    {
+        if (!IsValid(input)) {
+            throw new Exception(input)
+        }
+        Value = input;
+    }
+    private bool IsValid(string input) => true;
+}
+```
+
+Wo kommt die `ValueObject<T>` Klasse her?
