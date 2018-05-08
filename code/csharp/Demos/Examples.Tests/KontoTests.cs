@@ -11,17 +11,16 @@ namespace Examples.Tests
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(-10)]
-        public void Kontostand_ist_nach_Einzahlung_groesser_als_davor(int betrag)
+        public void Kontostand_ist_nach_Einzahlung_groesser_als_davor(int geld)
         {
             // Arrange
-            var konto = new Konto();
-            var before = konto.Kontostand;
+            var sut = new Konto1(); // SUT: System Under Test
 
             // Act
-            konto.Einzahlen(betrag);
+            sut.Einzahlen(geld);
             
             // Assert
-            konto.Kontostand.Should().BeGreaterThan(before);
+            sut.Kontostand.Should().BeGreaterThan(0);
         }
     }
 }

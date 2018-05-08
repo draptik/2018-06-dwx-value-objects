@@ -2,13 +2,13 @@
 
 namespace Examples
 {
-    public class Konto
+    public class Konto1
     {
         public int Kontostand { get; private set; } = 0;
 
-        public void Einzahlen(int betrag) 
+        public void Einzahlen(int geld) 
         { 
-            this.Kontostand += betrag;
+            this.Kontostand += geld;
         }
     }
 }
