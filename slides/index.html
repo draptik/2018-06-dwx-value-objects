@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>Your title</title>
+		<title>Value Objects (on steroids)</title>
 		
 		<!-- favicon -->
 		<link rel="shortcut icon" type="image/x-icon" href="/resources/Softwerkskammer16x16.ico">
@@ -85,15 +85,18 @@
 						}
 					},
 					{ src: 'plugin/tagcloud/tagcloud.js', async: true },
-					{ src: 'plugin/badges/badges.js'}
+					// { src: 'plugin/badges/badges.js'}
 				],
 				badges: {
 					path: 'plugin/badges',
+					defaults: {
+                		position: 'br'
+            		},
 					languages: {
 						csharp: {
 							label: 'C#',
-							fg: 'gray',
-							bg: '#fdf6e3'
+							// fg: 'gray',
+							// bg: '#fdf6e3'
 						},
 						fsharp: {
 							label: 'F#',
