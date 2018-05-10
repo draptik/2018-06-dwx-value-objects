@@ -2,7 +2,7 @@
 ## on steroids
 
 - <i class="fa fa-user"></i> Patrick Drechsler
-- <i class="fa fa-calendar" aria-hidden="true"></i> 25.06.2018
+- <i class="fa fa-calendar" aria-hidden="true"></i> DWX: 25.06.2018
 - <i class="fa fa-twitter" aria-hidden="true"></i> @drechsler
 - <i class="fa fa-github" aria-hidden="true"></i> github.com/draptik
 
@@ -122,21 +122,12 @@ x---
 
 ## Immutability
 
-```csharp
-public class Konto
-{
-    public Geld Kontostand { get; private set; } = new Geld(0);
+- einfacher zu Erstellen & Testen
+- keine Seiteneffekte
+- keine Null References
+- Thread Safe
+- verhindert Temporal Coupling
 
-    public void Einzahlen(Geld geld) 
-    { 
-        // Kontostand ist immer ein neues, gültiges Objekt
-        Kontostand = new Geld(Kontostand.Betrag + geld.Betrag);
-    }
-}
-```
-
-Note:
-Einzahlung kann ungültigen Wert liefern: Dazu kommen wir spaeter!
 
 x--
 
@@ -158,15 +149,11 @@ x---
 
 Geld ist mehr als nur Betrag
 
-`1EUR != 1USD != 1BC`
-
-Note: TODO Replace with images of coins/bills/bitcoin-logo
+![noborder-currencies](resources/currencies.png)
 
 x---
 
-Fügen wir 
-- **Währung** 
-- zur Klasse **Geld** hinzu...
+Fügen wir **Währung** zur Klasse **Geld** hinzu...
 
 x---
 
@@ -224,21 +211,21 @@ x--
 
 ![noborder-equality-by-reference](resources/eq1.png)
 
-TODO Geld gleich Geld: schlecht
+"Geld gleich Geld" <i class="fa fa-thumbs-o-down" style="color: red; padding-left:10px"></i>
 
 x--
 ### Equality by identifier
 
 ![noborder-equality-by-identifier](resources/eq2.png)
 
-TODO Geld gleich Geld: schlecht
+"Geld gleich Geld" <i class="fa fa-thumbs-o-down" style="color: red; padding-left:10px"></i>
 
 x--
 ### Equality by structure
 
 ![noborder-equality-by-structure](resources/eq3.png)
 
-TODO Geld gleich Geld: Volltreffer!
+"Geld gleich Geld" <i class="fa fa-thumbs-o-up" style="color: green; padding-left:10px"></i>
 
 x---
 
@@ -246,13 +233,20 @@ x---
 public class Geld
 {
     // ...
-
     public override bool Equals(Geld other) 
     {
-        return 
+        return
             other.Betrag == this.Betrag &&
             other.Waehrung == this.Waehrung;
-    }    
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = 17;
+        hash = hash * 31 + (Betrag == null ? 0 : Betrag.GetHashCode());
+        hash = hash * 31 + (Waehrung == null ? 0 : Waehrung.GetHashCode());
+        return hash;
+    }
 }
 ```
 ```csharp
@@ -261,8 +255,7 @@ public void Geld_ist_gleich_Geld()
 {
     var geld1 = new Geld(1, Waehrung.EUR);
     var geld2 = new Geld(1, Waehrung.EUR);
-
-    geld1.Should().BeEqual(geld2); // <-- greenh
+    geld1.Should().BeEqual(geld2); // <-- green
 }
 ```
 
@@ -277,57 +270,267 @@ x---
 
 x---
 
+und ganz nebenbei haben wir zu Fuß ein 
+
+### Value Object 
+
+erstellt
+
+x---
+
 ## Value Object
-- Ausdrucksstärke: 
-    - Expressiveness
-- Unveränderlichbarkeit: 
-    - Immutability
-- Attributbasiertevergleichbarkeit: 
-    - Equality by structure
+
+- Ausdrucksstark (*"Expressiveness"*)
+    - Methodensignaturen sind verständlich
+- Unveränderlich (*"Immutability"*)
+- Attributbasierte Vergleichbarkeit (*"Equality by structure"*)
+- Logik ist da wo sie hingehört (*"Encapsulation"*)
+
 
 x---
 
-## Es geht nicht nur ums Geld...
+## DDD Jargon
+
+- **Entity**: Objekt mit Lebenszyklus (Identität)
+    - z.B. Kunde
+- **Value Object**: Unveränderliches Objekt
+    - z.B. Geld, Adresse, Email, ...
+
+Entscheidung ist immer kontextabhängig!<!-- .element: class="fragment" data-fragment-index="1" -->
 
 x---
-
-- TODO Erst zeigen, wie Abstract VO geht
-- TODO ODER Ganz viel Logik (on steroids) innerhalb eines VO
-
-x---
-
-Geld ist nicht alles!
 
 ```csharp
 public class Konto
 {
     public Geld Kontostand { /* ... */ };
-    public Email KontaktEmail { /* ... */ }
+    public Email KontaktEmail { /* ... */ } // <-- neues Value Object
 }
 ```
 
 x---
 
 ```csharp
-public class Kunde
+public class Email : ValueObject<Email>
 {
-    public Email KontaktEmail { get; set; }
+    public string Value { get; }
+    
+    public Email(string input)
+    {
+        if (!IsValid(input)) {
+            throw new InvalidEmailException(input)
+        }
+        Value = input;
+    }
+    
+    private bool IsValid(string input) => true;
+
+    protected override IEnumerable<object> 
+        GetAttributesToIncludeInEqualityCheck()
+    {
+        return new List<object> {Value};
+    }
 }
+```
+
+Note: Wo kommt die `ValueObject<T>` Klasse her?
+
+x---
+
+```csharp
+public abstract class ValueObject<T> where T : ValueObject<T>
+{
+    public override bool Equals(object other)     // <-- 1
+    {
+        return Equals(other as T);
+    }
+
+    protected abstract IEnumerable<object> 
+        GetAttributesToIncludeInEqualityCheck();  // <-- 2
+
+    public bool Equals(T other)                   // <-- 3
+    {
+        if (other == null) return false;
+
+        return GetAttributesToIncludeInEqualityCheck()
+            .SequenceEqual(
+                other.GetAttributesToIncludeInEqualityCheck());
+    }
+
+    public override int GetHashCode()             // <-- 4
+    {
+        var hash = 17;
+        foreach (var obj in GetAttributesToIncludeInEqualityCheck())
+            hash = hash * 31 + (obj == null ? 0 : obj.GetHashCode());
+
+        return hash;
+    }
+}
+
+```
+
+x--
+
+### Sugar: Operator overloading
+
+```csharp
+public abstract class ValueObject<T> where T : ValueObject<T>
+{
+    //...
+    public static bool operator ==(ValueObject<T> left, 
+                                   ValueObject<T> right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(ValueObject<T> left,
+                                   ValueObject<T> right)
+    {
+        return !(left == right);
+    }
+}
+```
+
+x--
+
+### More Sugar: implicit operator
+
+```csharp
+var email = new Email("foo@bar.baz");
+string s = email.Value;                   // <-- nervt auf Dauer...
 ```
 
 ```csharp
 public class Email : ValueObject<Email>
 {
     public string Value { get; }
-    public Email(string input)
+
+    //...
+    public static implicit operator string(Email mail)
     {
-        if (!IsValid(input)) {
-            throw new Exception(input)
-        }
-        Value = input;
+        return mail.Value.ToString();
     }
-    private bool IsValid(string input) => true;
 }
 ```
 
-Wo kommt die `ValueObject<T>` Klasse her?
+```csharp
+var email = new Email("foo@bar.baz");
+string s = email;                         // <-- einfacher
+```
+
+x---
+
+## Optionale Value Objects
+
+```csharp
+public class BahnKunde
+{
+    // Optional
+    public BonusPunkte BonusPunkte { get; } = new BonusPunkte(null);
+}
+```
+
+```csharp
+public class BonusPunkte : ValueObject<BonusPunkte>
+{
+    public int Punkte { get; } = 0;
+
+    // ...
+    private bool IsValid(int? punkte)
+    {
+        return punkte == null 
+            ? true 
+            : punkte > 0;
+    }
+}
+```
+
+x---
+
+## Exkurs F# #
+
+x--
+
+TODO Verify syntax
+```fsharp
+type BonusPunkte = BonusPunkte of int
+type Bahnkunde = {
+    Name: string
+    Bonuspunkte: BonusPunkte option
+}
+
+let kunde1 = { Name: "foo"; Bonuspunkte: 42 }
+let kunde2 = { Name: "foo" }
+```
+
+x---
+
+## FAQ
+
+- Wann sollte man statt eines Basistyps (`string`, `int`) ein VO einsetzen?
+    - Sobald Geschäftslogik im Spiel ist (z.B. Validierung)
+- Wann sollte man VOs vermeiden?
+    - Bei Collections von VOs sollte man aufpassen
+- Ist das nicht schlecht für die Performance?
+    - Ja, aber...
+- Funktionieren VOs auch mit meinem OR-Mapper?
+
+x---
+
+## Fallstricke
+
+- ORM
+- Collections
+
+x--
+
+### OR-Mapper
+
+TODO
+
+- `ComplexType` Annotation
+
+
+x--
+
+### Collections
+
+TODO
+
+- Umdenken oder
+- Serialisieren
+
+x---
+
+# on Steroids
+
+x---
+
+TODO
+
+Moegliche Beispiele:
+- Email: IsCompanyMail
+- Geld: Addition mit Wechselkurs?
+- ReportingAmount von BMS Projekt (Add, Percentage, etc)
+
+x---
+
+TODO
+
+x---
+
+## Zusammenfassung
+
+- Value Object: 
+    - immer dann, wenn Basistyp und Businesslogik aufeinandertreffen
+- Vorteil: Kleine Einheit (immutable) 
+    - `->` verständlich
+    - `->` weniger denken
+
+Note: Fragen?
+
+x---
+
+- <i class="fa fa-twitter" aria-hidden="true"></i> @drechsler
+- <i class="fa fa-github" aria-hidden="true"></i> github.com/draptik
+- <i class="fa fa-envelope"></i> patrick.drechsler@redheads.de
