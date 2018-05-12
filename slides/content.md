@@ -50,7 +50,8 @@ public class Konto
 }
 ```
 
-```csharp
+<pre>
+<code data-noescape data-trim class="lang-csharp hljs fragment" data-fragment-index="1">
 [Fact]
 public void Kontostand_ist_nach_Einzahlung_groesser_als_davor()
 {
@@ -59,7 +60,8 @@ public void Kontostand_ist_nach_Einzahlung_groesser_als_davor()
     konto.Einzahlen(-10); // <---------------------- AUTSCH!
     konto.Kontostand.Should().BeGreaterThan(before);
 }
-```
+</code>
+</pre>
 
 x---
 
@@ -96,24 +98,24 @@ x---
 ```csharp
 public class Geld
 {
-    public int Betrag { get; }
+    public int Betrag { get; }                       // <- 1
 
-    public Geld(int betrag) 
+    public Geld(int betrag)                          // <- 2
     {
-        if (!IsValid(betrag))
+        if (!IsValid(betrag))                        // <- 3
         {
             throw new InvalidGeldException(betrag.ToString());
         }
-        this.Betrag = betrag;
+
+        this.Betrag = betrag;                        // <- 2'
     }
 
-    private bool IsValid(int betrag) => betrag >= 0;
+    private bool IsValid(int betrag) => betrag >= 0; // <- 3'
 }
 ```
-- Wert kann nicht verändert werden<!-- .element: class="fragment" data-fragment-index="1" -->
 - Es kann nur gültige Geld-Objekte geben<!-- .element: class="fragment" data-fragment-index="1" -->
+- Wert kann nicht verändert werden<!-- .element: class="fragment" data-fragment-index="1" -->
 
-**Immutability**<!-- .element: class="fragment" data-fragment-index="2" -->
 
 Note:
 - schauen wir nochmal auf unsere Konto-Klasse...
@@ -145,11 +147,72 @@ public void Geld_schmeisst_wenn_Betrag_zu_gross()
 
 vernünftige Exception!
 
+(bessere Implemtierung folgt)
+
+x--
+
+### Mehr Verhalten in die Geld-Klasse packen
+
+#### (Preview)
+
+```csharp
+public class Geld
+{
+    public int Betrag { get; }
+
+    // ...
+
+    public Geld Add(Geld geld)
+    {
+        try 
+        {
+            return new Geld(this.Betrag + geld.Betrag);
+        }
+        catch 
+        {
+            throw new InvalidGeldException(
+                $"Ups. Can't add {geld.Betrag} to {Betrag}!");
+        }
+    }
+}
+```
+
+x--
+
+```csharp
+[Fact]
+public void Geld_laesst_sich_addieren()
+{
+    var geldEins = new Geld(1);
+    var geldZwei = new Geld(10);
+
+    geldEins
+        .Add(geldZwei).Betrag
+        .Should()
+        .Be(11);
+}
+```
+
 x---
 
 Geld ist mehr als nur Betrag
 
-![noborder-currencies](resources/currencies.png)
+```csharp
+public class UeberweisungsService
+{
+    public void Ueberweise(
+        string kontoSender, 
+        string kontoEmpfaenger, 
+        int geld)
+    {
+        // ...
+    }
+}
+
+
+```
+
+![noborder-currencies](resources/currencies.png)<!-- .element: class="fragment" data-fragment-index="1" -->
 
 x---
 
@@ -447,58 +510,42 @@ public class BonusPunkte : ValueObject<BonusPunkte>
 
 x---
 
-## Exkurs F# #
-
-x--
-
-TODO Verify syntax
-```fsharp
-type BonusPunkte = BonusPunkte of int
-type Bahnkunde = {
-    Name: string
-    Bonuspunkte: BonusPunkte option
-}
-
-let kunde1 = { Name: "foo"; Bonuspunkte: 42 }
-let kunde2 = { Name: "foo" }
-```
-
-x---
-
 ## FAQ
 
-- Wann sollte man statt eines Basistyps (`string`, `int`) ein VO einsetzen?
-    - Sobald Geschäftslogik im Spiel ist (z.B. Validierung)
-- Wann sollte man VOs vermeiden?
-    - Bei Collections von VOs sollte man aufpassen
 - Ist das nicht schlecht für die Performance?
-    - Ja, aber...
-- Funktionieren VOs auch mit meinem OR-Mapper?
+    - Ja, aber...<!-- .element: class="fragment" data-fragment-index="1" -->
+- Wann sollte man statt eines Basistyps ein VO einsetzen?
+    - Sobald Geschäftslogik im Spiel ist (z.B. Validierung)<!-- .element: class="fragment" data-fragment-index="2" -->
+- Funktionieren VOs auch mit meinem OR-Mapper?<!-- .element: class="fragment" data-fragment-index="3" -->
+- Wann sollte man VOs vermeiden?<!-- .element: class="fragment" data-fragment-index="4" -->
+    - Bei Collections von VOs sollte man aufpassen
 
 x---
 
 ## Fallstricke
 
-- ORM
 - Collections
-
-x--
-
-### OR-Mapper
-
-TODO
-
-- `ComplexType` Annotation
-
+- ORM
 
 x--
 
 ### Collections
 
-TODO
+- Don't do it
+- Wenn doch:
+    - Umdenken oder
+    - Serialisieren
 
-- Umdenken oder
-- Serialisieren
+x--
+
+### OR-Mapper
+
+- Wenn moeglich die Domaenenlogik von der ORM Logik entkoppeln.
+- Zur Not: 
+    - EF kennt `ComplexType` Annotation
+    - NHibernate kann auch mit VOs umgehen
+    - Beides fuehrt zu technischem Code in der Domaenenlogik (`protected`, `virtual`, etc)
+
 
 x---
 
@@ -513,9 +560,37 @@ Moegliche Beispiele:
 - Geld: Addition mit Wechselkurs?
 - ReportingAmount von BMS Projekt (Add, Percentage, etc)
 
+x--
+
+### CompanyMail
+
+```csharp
+public class Customer 
+{
+    public Email Mail { get; set; }
+    public CompanyEmail CompanyMail { get; set; }
+}
+
+public class CompanyEmail : Email // <-- Value Object
+{ 
+    // ...
+    private bool IsValid(Email mail) 
+        => mail.StartsWith("CompanyName");
+}
+
+public class SomeOtherClass 
+{
+    public void RegisterForInternalNewsletter(CompanyEmail mail) 
+    { 
+        /*...*/
+    }
+}
+```
+
 x---
 
-TODO
+## Money
+
 
 x---
 
