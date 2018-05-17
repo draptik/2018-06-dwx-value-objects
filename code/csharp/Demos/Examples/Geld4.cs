@@ -2,7 +2,9 @@ using System;
 using Examples;
 using Examples.Exceptions;
 
-// Jetzt mit Waehrung
+// TODO Replace int with decimal
+// TODO Add formatting (ToString), culture specific
+// TODO Add division and multiplication
 public class Geld4
 {
     public int Value { get; }
