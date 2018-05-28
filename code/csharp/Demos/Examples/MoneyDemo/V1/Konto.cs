@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Examples
+namespace Examples.MoneyDemo.V1
 {
-    public class Konto1
+    public class Konto
     {
         public int Kontostand { get; private set; } = 0;
 

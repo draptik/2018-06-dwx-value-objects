@@ -1,19 +1,20 @@
 using System;
 using Examples.Exceptions;
+using Examples.MoneyDemo.V2;
 using FluentAssertions;
 using Xunit;
 
-namespace Examples.Tests
+namespace Examples.Tests.MoneyDemo.V2
 {
-    public class Konto2Tests
+    public class KontoTests
     {
         [Theory]
         [InlineData(-1)]
         [InlineData(-10)]
         public void Einzahlung_mit_ungueltigem_Geldwert_schmeisst_Exception(int geld)
         {
-            var sut = new Konto2();
-            Action action = () => sut.Einzahlen(new Geld2(geld));
+            var sut = new Konto();
+            Action action = () => sut.Einzahlen(new Geld(geld));
             action.Should().Throw<InvalidGeld2ValueException>();
         }
     }
