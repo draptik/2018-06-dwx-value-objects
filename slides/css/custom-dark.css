@@ -49,6 +49,9 @@
     font-size: 70%;
 }
 
+.reveal .slides strong {
+    color: orange;
+}
 /* Only for debugging */
 /*.slides section.present p .small {
     font-size: 20px;
