@@ -553,6 +553,15 @@ x---
 
 x---
 
+![noborder-center-of-gravity](resources/center-of-gravity0.png)
+
+x---
+
+
+![noborder-center-of-gravity](resources/center-of-gravity.png)
+
+x---
+
 TODO
 
 Moegliche Beispiele:
