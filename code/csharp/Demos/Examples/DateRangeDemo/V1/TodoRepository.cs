@@ -14,7 +14,7 @@ namespace Examples.DateRangeDemo.V1
 
         public IEnumerable<Todo> GetTodosBetween(DateTime from, DateTime to)
         {
-            if (from >= to)
+            if (from <= to)
             {
                 throw new InvalidDateRangeException();
             }
