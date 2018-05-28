@@ -18,7 +18,7 @@ namespace Examples.Tests.DateRangeDemo.V1
             int expectedNumberOfResults)
         {
             var from = new DateTime(fromYear, fromMonth, fromDay);
-            var to = new DateTime(toYear, toMonth, toDay);
+            var to   = new DateTime(toYear,   toMonth,   toDay);
 
             var sut = new TodoRepository(); // <--- testing complex object :-(
 

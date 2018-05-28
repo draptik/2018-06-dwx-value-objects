@@ -17,8 +17,8 @@ namespace Examples.Tests.DateRangeDemo.V2
             int actualYear, int actualMonth, int actualDay, 
             bool expected)
         {
-            var from = new DateTime(fromYear, fromMonth, fromDay);
-            var to = new DateTime(toYear, toMonth, toDay);
+            var from   = new DateTime(fromYear,   fromMonth,   fromDay);
+            var to     = new DateTime(toYear,     toMonth,     toDay);
             var actual = new DateTime(actualYear, actualMonth, actualDay);
             var wasMitErstelltAm = new WasMitErstelltAm { ErstelltAm = actual };
             
