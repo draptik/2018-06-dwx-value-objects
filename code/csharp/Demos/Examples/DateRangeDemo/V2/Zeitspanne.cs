@@ -4,24 +4,24 @@ namespace Examples.DateRangeDemo.V2
 {
     public class Zeitspanne
     {
-        public DateTime From { get; }
-        public DateTime To { get; }
+        public DateTime Von { get; }
+        public DateTime Bis { get; }
 
-        public Zeitspanne(DateTime from, DateTime to)
+        public Zeitspanne(DateTime von, DateTime bis)
         {
-            if (!IsValid(from, to))
+            if (!IsValid(von, bis))
             {
                 throw new InvalidDateRangeException();
             }
             
-            From = from;
-            To = to;
+            Von = von;
+            Bis = bis;
         }
 
-        private bool IsValid(DateTime from, DateTime to) => from < to;
+        private bool IsValid(DateTime von, DateTime bis) => von < bis;
 
         public bool Umfasst<THasErstelltAm>(THasErstelltAm o) 
             where THasErstelltAm : IHaveErstelltAm  => 
-            o.ErstelltAm >= From && o.ErstelltAm <= To;
+            o.ErstelltAm >= Von && o.ErstelltAm <= Bis;
     }
 }

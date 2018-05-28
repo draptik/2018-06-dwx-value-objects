@@ -17,12 +17,12 @@ namespace Examples.Tests.DateRangeDemo.V2
             int actualYear, int actualMonth, int actualDay, 
             bool expected)
         {
-            var from   = new DateTime(fromYear,   fromMonth,   fromDay);
-            var to     = new DateTime(toYear,     toMonth,     toDay);
+            var von    = new DateTime(fromYear,   fromMonth,   fromDay);
+            var bis    = new DateTime(toYear,     toMonth,     toDay);
             var actual = new DateTime(actualYear, actualMonth, actualDay);
             var wasMitErstelltAm = new WasMitErstelltAm { ErstelltAm = actual };
             
-            var sut = new Zeitspanne(from, to); // <--- testing Value Object
+            var sut = new Zeitspanne(von, bis); // <--- testing Value Object
 
             sut.Umfasst(wasMitErstelltAm).Should().Be(expected);
         }
