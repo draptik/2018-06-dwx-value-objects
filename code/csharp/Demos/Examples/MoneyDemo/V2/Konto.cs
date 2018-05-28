@@ -8,6 +8,5 @@ namespace Examples.MoneyDemo.V2
         {
             this.Kontostand = new Geld(this.Kontostand.Value + geld.Value);
         }
-
     }
 }

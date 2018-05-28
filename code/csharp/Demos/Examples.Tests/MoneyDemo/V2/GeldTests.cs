@@ -1,5 +1,5 @@
 using System;
-using Examples.Exceptions;
+using Examples.MoneyDemo;
 using Examples.MoneyDemo.V2;
 using FluentAssertions;
 using Xunit;
@@ -15,7 +15,7 @@ namespace Examples.Tests.MoneyDemo.V2
 
             Action action = () => new Geld(max + 1);
             
-            action.Should().Throw<InvalidGeld2ValueException>();
+            action.Should().Throw<InvalidGeldValueException>();
         }
     }
 }

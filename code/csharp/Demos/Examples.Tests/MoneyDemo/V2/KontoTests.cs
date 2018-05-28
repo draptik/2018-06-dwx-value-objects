@@ -1,5 +1,5 @@
 using System;
-using Examples.Exceptions;
+using Examples.MoneyDemo;
 using Examples.MoneyDemo.V2;
 using FluentAssertions;
 using Xunit;
@@ -15,7 +15,7 @@ namespace Examples.Tests.MoneyDemo.V2
         {
             var sut = new Konto();
             Action action = () => sut.Einzahlen(new Geld(geld));
-            action.Should().Throw<InvalidGeld2ValueException>();
+            action.Should().Throw<InvalidGeldValueException>();
         }
     }
 }

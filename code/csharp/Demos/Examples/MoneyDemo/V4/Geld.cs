@@ -1,6 +1,5 @@
 using System;
 using Examples;
-using Examples.Exceptions;
 
 
 namespace Examples.MoneyDemo.V4
@@ -19,7 +18,7 @@ namespace Examples.MoneyDemo.V4
         {
             if (!IsValid(betrag, waehrung))
             {
-                throw new InvalidGeld2ValueException(betrag.ToString());
+                throw new InvalidGeldValueException(betrag.ToString());
             }
             this.Value = betrag;
         }
@@ -28,7 +27,7 @@ namespace Examples.MoneyDemo.V4
         {
             if (this.Waehrung != geld.Waehrung)
             {
-                throw new InvalidGeld2ValueException("Waehrungen stimmen nicht ueberein");
+                throw new InvalidGeldValueException("Waehrungen stimmen nicht ueberein");
             }
 
             try
@@ -37,7 +36,7 @@ namespace Examples.MoneyDemo.V4
             }
             catch (System.Exception)
             {
-                throw new InvalidGeld2ValueException("Wert ist zu gross (groesser als Int32.MaxValue).");
+                throw new InvalidGeldValueException("Wert ist zu gross (groesser als Int32.MaxValue).");
             }
         }
 
@@ -47,7 +46,7 @@ namespace Examples.MoneyDemo.V4
         {
             if (this.Waehrung != geld.Waehrung)
             {
-                throw new InvalidGeld2ValueException("Waehrungen stimmen nicht ueberein");
+                throw new InvalidGeldValueException("Waehrungen stimmen nicht ueberein");
             }
 
             return new Geld(this.Value - geld.Value, this.Waehrung);

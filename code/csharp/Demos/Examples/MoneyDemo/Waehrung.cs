@@ -1,4 +1,4 @@
-namespace Examples
+namespace Examples.MoneyDemo
 {
     public enum Waehrung
     {

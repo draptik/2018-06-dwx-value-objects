@@ -1,5 +1,3 @@
-using Examples.Exceptions;
-
 namespace Examples.MoneyDemo.V2
 {
     public class Geld
@@ -10,9 +8,10 @@ namespace Examples.MoneyDemo.V2
         {
             if (!IsValid(betrag))
             {
-                throw new InvalidGeld2ValueException(betrag.ToString());
+                throw new InvalidGeldValueException(betrag.ToString());
             }
-            this.Value = betrag;
+
+            Value = betrag;
         }
 
         private bool IsValid(int betrag) => betrag >= 0;

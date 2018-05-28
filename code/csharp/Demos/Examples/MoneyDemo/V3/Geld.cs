@@ -1,5 +1,4 @@
 using System;
-using Examples.Exceptions;
 
 namespace Examples.MoneyDemo.V3
 {
@@ -11,7 +10,7 @@ namespace Examples.MoneyDemo.V3
         {
             if (!IsValid(betrag))
             {
-                throw new InvalidGeld2ValueException(betrag.ToString());
+                throw new InvalidGeldValueException(betrag.ToString());
             }
             this.Value = betrag;
         }
@@ -25,7 +24,7 @@ namespace Examples.MoneyDemo.V3
         {
             if (this.Value - geld.Value < 0)
             {
-                throw new InvalidGeld2ValueException("Wert darf nicht kleiner als Null sein.");
+                throw new InvalidGeldValueException("Wert darf nicht kleiner als Null sein.");
             }
 
             return new Geld(this.Value - geld.Value);
