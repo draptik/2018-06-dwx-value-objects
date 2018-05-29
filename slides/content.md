@@ -562,39 +562,33 @@ x---
 
 x---
 
-TODO
-
-Moegliche Beispiele:
-- Email: IsCompanyMail
-- Geld: Addition mit Wechselkurs?
-- ReportingAmount von BMS Projekt (Add, Percentage, etc)
-
-x--
-
-### CompanyMail
+### Erweiterbar...
 
 ```csharp
-public class Customer 
+public class CompanyEmail
 {
-    public Email Mail { get; set; }
-    public CompanyEmail CompanyMail { get; set; }
-}
+    public CompanyEmail(Email mail) // <-- "Email" ist ein Value Object
+    {
+        if (!IsValid(mail))
+        {
+            throw new InvalidCompanyEmailException(mail.Value);
+        }
 
-public class CompanyEmail : Email // <-- Value Object
-{ 
-    // ...
-    private bool IsValid(Email mail) 
-        => mail.StartsWith("CompanyName");
-}
-
-public class SomeOtherClass 
-{
-    public void RegisterForInternalNewsletter(CompanyEmail mail) 
-    { 
-        /*...*/
+        Value = mail;
     }
+
+    public Email Value { get; }
+
+    private bool IsValid(Email mail) => 
+        mail.Value.EndsWith("companyname.com");
 }
 ```
+
+x---
+
+## Auch außerhalb von Entitäten nützlich
+
+TODO: DateRange
 
 x---
 
