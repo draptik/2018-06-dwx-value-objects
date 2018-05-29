@@ -538,11 +538,11 @@ x--
 
 ### OR-Mapper
 
-- Wenn moeglich die Domaenenlogik von der ORM Logik entkoppeln.
+- Tip: Wenn möglich die Domänenlogik von der ORM Logik entkoppeln
 - Zur Not: 
-    - EF kennt `ComplexType` Annotation
-    - NHibernate kann auch mit VOs umgehen
-    - Beides fuehrt zu technischem Code in der Domaenenlogik (`protected`, `virtual`, etc)
+    - **EF** kennt **`ComplexType`** Annotation
+    - **NHibernate** kann auch mit VOs umgehen
+    - Aber: Beides führt zu technischem Code in der Domänenlogik (`protected`, `virtual`, etc)
 
 
 x---
@@ -638,11 +638,10 @@ noch **mehr Fachlichkeit** ins Objekt packen
 ```csharp
 public class Zeitspanne
 {
-    //...
+    public bool Umfasst<T>(T t) where T : IHaveErstelltAm  => 
+        t.ErstelltAm >= Von && t.ErstelltAm <= Bis;
 
-    public bool Umfasst<THasErstelltAm>(THasErstelltAm o) 
-        where THasErstelltAm : IHaveErstelltAm  => 
-        o.ErstelltAm >= Von && o.ErstelltAm <= Bis;
+    //...
 }
 ```
 
