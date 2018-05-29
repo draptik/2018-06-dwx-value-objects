@@ -8,7 +8,7 @@
 
 x---
 
-#### Patrick Drechsler
+**Patrick Drechsler**
 
 - "gelernter" Biologe
 - C# Entwickler bei Redheads Ltd.
@@ -147,13 +147,11 @@ public void Geld_schmeisst_wenn_Betrag_zu_gross()
 
 vernünftige Exception!
 
-(bessere Implemtierung folgt)
+(bessere Implementierung folgt)
 
 x--
 
-### Mehr Verhalten in die Geld-Klasse packen
-
-#### (Preview)
+Vorschau: mehr Verhalten in die Geld-Klasse packen
 
 ```csharp
 public class Geld
@@ -335,7 +333,7 @@ x---
 
 und ganz nebenbei haben wir zu Fuß ein 
 
-### Value Object 
+**Value Object** 
 
 erstellt
 
@@ -354,9 +352,9 @@ x---
 
 ## DDD Jargon
 
-- **Entity**: Objekt mit Lebenszyklus (Identität)
+- **Entity** Objekt mit Lebenszyklus (Identität)
     - z.B. Kunde
-- **Value Object**: Unveränderliches Objekt
+- **Value Object** Unveränderliches Objekt
     - z.B. Geld, Adresse, Email, ...
 
 Entscheidung ist immer kontextabhängig!<!-- .element: class="fragment" data-fragment-index="1" -->
@@ -682,6 +680,9 @@ x---
 
 ## Money
 
+TODO: 6-7 slides showing the power of Money as VO
+
+TODO: Alternative: Livecoding
 
 x---
 
@@ -692,6 +693,7 @@ x---
 - Vorteil: Kleine Einheit (immutable) 
     - `->` verständlich
     - `->` weniger denken
+    - `->` einfach testbar
 
 Note: Fragen?
 
