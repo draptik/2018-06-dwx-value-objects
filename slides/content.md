@@ -562,7 +562,7 @@ x---
 
 x---
 
-### Erweiterbar...
+## Erweiterbar...
 
 ```csharp
 public class CompanyEmail
@@ -583,12 +583,100 @@ public class CompanyEmail
         mail.Value.EndsWith("companyname.com");
 }
 ```
+"Composition over Inheritance"
 
 x---
 
-## Auch außerhalb von Entitäten nützlich
+## Nicht nur für Entitäten nützlich
 
-TODO: DateRange
+```csharp
+public class TodoRepository
+{
+    private IEnumerable<Todo> Todos { get; }
+
+    public IEnumerable<Todo> GetTodosBetween(DateTime from, DateTime to)
+    {
+        if (from <= to)
+        {
+            throw new InvalidDateRangeException();
+        }
+                        
+        return Todos.Where(x => 
+            x.ErstelltAm >= from && x.ErstelltAm <= to);
+    }
+}
+```
+
+Logik kann extrahiert werden
+
+x--
+
+Fachliches Konzept **Zeitspanne** in Objekt kapseln:
+
+```csharp
+public class Zeitspanne
+{
+    public DateTime Von { get; }
+    public DateTime Bis { get; }
+
+    public Zeitspanne(DateTime von, DateTime bis)
+    {
+        if (!IsValid(von, bis))
+        {
+            throw new InvalidDateRangeException();
+        }
+        
+        Von = von;
+        Bis = bis;
+    }
+
+    private bool IsValid(DateTime von, DateTime bis) => von < bis;
+}
+```
+
+x--
+noch **mehr Fachlichkeit** ins Objekt packen
+
+```csharp
+public class Zeitspanne
+{
+    //...
+
+    public bool Umfasst<THasErstelltAm>(THasErstelltAm o) 
+        where THasErstelltAm : IHaveErstelltAm  => 
+        o.ErstelltAm >= Von && o.ErstelltAm <= Bis;
+}
+```
+
+
+x--
+
+```csharp
+public class TodoRepository
+{
+  public IEnumerable<Todo> GetTodosInnerhalbVon(Zeitspanne zeitspanne) 
+      => Todos.Where(zeitspanne.Umfasst);
+  // ...
+}
+```
+
+vs
+
+```csharp
+public class TodoRepository
+{
+    public IEnumerable<Todo> GetTodosBetween(DateTime from, DateTime to)
+    {
+        if (from <= to) {
+            throw new InvalidDateRangeException();
+        }
+                        
+        return Todos.Where(x => 
+            x.ErstelltAm >= from && x.ErstelltAm <= to);
+    }
+    // ...
+}
+```
 
 x---
 
