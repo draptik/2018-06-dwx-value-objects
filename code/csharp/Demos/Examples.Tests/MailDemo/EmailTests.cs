@@ -22,12 +22,12 @@ namespace Examples.Tests.MailDemo
         }
 
         [Theory]
-        [InlineData("localhost")]
-        [InlineData("a@b.c")]
-        public void Creating_Email_should_not_throw_when_given_nvalid_input(string validInput)
+        [InlineData("foo@bar.de")]
+        [InlineData("test.test@test.com")]
+        public void Creating_Email_should_not_throw_when_given_valid_input(string validInput)
         {
             Action action = () => new Email(validInput);
-            action.Should().Throw<InvalidEmailException>();
+            action.Should().NotThrow<InvalidEmailException>();
         }
     }
 }
