@@ -31,6 +31,10 @@ namespace Examples.MailDemo
             {
                 return false;
             }
+            catch (ArgumentNullException)
+            {
+                return false;
+            }
         }
     }
 }
