@@ -14,9 +14,9 @@ namespace Examples.DateRangeDemo.V1
 
         public IEnumerable<Todo> GetTodosBetween(DateTime from, DateTime to)
         {
-            if (from <= to)
+            if (from > to)
             {
-                throw new InvalidDateRangeException();
+                return new List<Todo>();
             }
                            
             return Todos.Where(x => x.ErstelltAm >= from && x.ErstelltAm <= to);
