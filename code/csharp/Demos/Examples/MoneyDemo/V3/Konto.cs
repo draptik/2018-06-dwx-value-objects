@@ -17,7 +17,7 @@ namespace Examples.MoneyDemo.V3
 
         public void Ueberweise(Geld geld, Konto empfaengerKonto)
         {
-            this.Kontostand.Subtrahiere(geld);
+            this.Kontostand = this.Kontostand.Subtrahiere(geld);
             empfaengerKonto.Einzahlen(geld);
         }
     }

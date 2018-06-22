@@ -30,7 +30,7 @@ namespace Examples.MoneyDemo.V3
             return new Geld(this.Value - geld.Value);
         }
 
-
-        private bool IsValid(int betrag) => betrag >= 0;
+        private bool IsValid(int betrag) 
+            => betrag >= 0 && betrag <= Int32.MaxValue;
     }
 }

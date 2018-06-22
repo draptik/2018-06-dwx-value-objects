@@ -21,6 +21,7 @@ namespace Examples.MoneyDemo.V4
                 throw new InvalidGeldValueException(betrag.ToString());
             }
             this.Value = betrag;
+            this.Waehrung = waehrung;
         }
 
         public Geld Addiere(Geld geld)
