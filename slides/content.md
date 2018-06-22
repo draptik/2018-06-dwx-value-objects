@@ -560,6 +560,10 @@ x---
 
 x---
 
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity.png)
+
+x---
+
 ## Erweiterbar...
 
 ```csharp
@@ -677,11 +681,9 @@ public class TodoRepository
 
 x---
 
-## Money
+## Demos
 
-TODO: 6-7 slides showing the power of Money as VO
-
-TODO: Alternative: Livecoding
+Money, DateRange, Mail
 
 x---
 
