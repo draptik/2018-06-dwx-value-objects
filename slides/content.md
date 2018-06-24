@@ -1,10 +1,13 @@
 # Value Objects
 ## on steroids
 
-- <i class="fa fa-user"></i> Patrick Drechsler
-- <i class="fa fa-calendar" aria-hidden="true"></i> DWX: 25.06.2018
+Patrick Drechsler
+
+`#dwx2018`
+
+- <i class="fa fa-calendar" aria-hidden="true"></i> 25.06.2018
 - <i class="fa fa-twitter" aria-hidden="true"></i> @drechsler
-- <i class="fa fa-github" aria-hidden="true"></i> github.com/draptik
+- <i class="fa fa-github" aria-hidden="true"></i> draptik
 
 x---
 
@@ -522,28 +525,29 @@ x---
 
 ## Fallstricke
 
-- Collections
 - ORM
-
-x--
-
-### Collections
-
-- Don't do it
-- Wenn doch:
-    - Umdenken oder
-    - Serialisieren
+- Collections
 
 x--
 
 ### OR-Mapper
 
-- Tip: Wenn möglich die Domänenlogik von der ORM Logik entkoppeln
-- Zur Not: 
-    - **EF** kennt **`ComplexType`** Annotation
-    - **NHibernate** kann auch mit VOs umgehen
-    - Aber: Beides führt zu technischem Code in der Domänenlogik (`protected`, `virtual`, etc)
+Entity Framework (EF) und NHibernate können mit VOs umgehen.
 
+Bsp.: **EF** mit **`ComplexType`**
+
+![noborder-orm](resources/draw.io/output/orm-table-labels.png)
+
+Tip: Wenn möglich die Domänenlogik von der ORM Logik entkoppeln
+
+x--
+
+### Collections
+
+- Können im ORM Umfeld problematisch sein
+- Wenn doch:
+    - Umdenken oder
+    - Serialisieren
 
 x---
 
@@ -561,6 +565,23 @@ x---
 x---
 
 ![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity.png)
+
+x---
+
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity1.png)
+
+Notes:
+Dan Bergh Johnsson: The Power of Value - Power Use of Value Objects in Domain Driven Design
+https://vimeo.com/13549100
+
+x---
+
+![noborder-fuck-gravity](resources/draw.io/output/center-of-gravity2.png)
+
+
+x---
+
+![noborder-fuck-gravity](resources/draw.io/output/center-of-gravity3.png)
 
 x---
 
@@ -656,7 +677,7 @@ x--
 public class TodoRepository
 {
   public IEnumerable<Todo> GetTodosInnerhalbVon(Zeitspanne zeitspanne) 
-      => Todos.Where(zeitspanne.Umfasst);
+      => Todos.Where(x => zeitspanne.Umfasst(x));
   // ...
 }
 ```
@@ -684,6 +705,20 @@ x---
 ## Demos
 
 Money, DateRange, Mail
+
+
+x---
+
+## Merkzettel
+
+- Immutability
+    - keinen parameterlosen Konstruktor
+    - keine "setter"
+    - Methoden dürfen nie den Zustand ändern
+- Vergleichbarkeit
+    - Equals / Hashcode überschreiben
+
+TODO: Download full screen post-it note background / implement in css?
 
 x---
 
