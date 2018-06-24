@@ -13,7 +13,6 @@ x---
 
 **Patrick Drechsler**
 
-- "gelernter" Biologe
 - C# Entwickler bei Redheads Ltd.
 - aktuelle Schwerpunkte: DDD, FP, Cloud
 - Softwerkskammer
@@ -60,7 +59,7 @@ public void Kontostand_ist_nach_Einzahlung_groesser_als_davor()
 {
     var konto = new Konto();
     var before = konto.Kontostand;
-    konto.Einzahlen(-10); // <---------------------- AUTSCH!
+    <span class="mycodemark-always">konto.Einzahlen(-10); // <---------------------- AUTSCH!</span>
     konto.Kontostand.Should().BeGreaterThan(before);
 }
 </code>
@@ -68,12 +67,12 @@ public void Kontostand_ist_nach_Einzahlung_groesser_als_davor()
 
 x---
 
-- Problem: Geld ist kein Integer!
+- Problem: **Signatur lügt!** (Geld ist kein Integer)
 - Willkommen in der Welt der Antipattern...<!-- .element: class="fragment" data-fragment-index="1" -->
 
 **Primitive Obsession**<!-- .element: class="fragment" data-fragment-index="2" -->
 
-*Like most other [code] smells, primitive obsessions are born in moments of weakness. "Just a field for storing some data!" the programmer said. Creating a primitive field is so much easier than **making a whole new class**, right?*<!-- .element: class="fragment" data-fragment-index="2" -->
+*Like most other [code] smells, primitive obsessions are born in moments of weakness. **"Just a field for storing some data!"** the programmer said. Creating a primitive field is so much easier than **making a whole new class**, right?*<!-- .element: class="fragment" data-fragment-index="2" -->
 
 <span class="small fragment" data-fragment-index="2"> https://sourcemaking.com/refactoring/smells/primitive-obsession</span> 
 
@@ -83,17 +82,19 @@ Note:
 
 x---
 
-```csharp
+<pre>
+<code data-noescape data-trim class="lang-csharp hljs">
 public class Konto
 {
     public Geld Kontostand { get; private set; } = new Geld(0);
 
-    public void Einzahlen(Geld geld) 
+    public void Einzahlen(<span class="mycodemark-always">Geld geld</span>) 
     { 
-        Kontostand = new Geld(Kontostand.Betrag + geld.Betrag);
+        Kontostand = <span class="mycodemark-always">new Geld</span>(Kontostand.Betrag + geld.Betrag);
     }
 }
-```
+</code></pre>
+
 Geld Klasse existiert noch nicht...<!-- .element: class="fragment" data-fragment-index="1" -->
 
 x---
@@ -119,10 +120,6 @@ public class Geld
 - Es kann nur gültige Geld-Objekte geben<!-- .element: class="fragment" data-fragment-index="1" -->
 - Wert kann nicht verändert werden<!-- .element: class="fragment" data-fragment-index="1" -->
 
-
-Note:
-- schauen wir nochmal auf unsere Konto-Klasse...
-
 x---
 
 ## Immutability
@@ -132,7 +129,6 @@ x---
 - keine Null References
 - Thread Safe
 - verhindert Temporal Coupling
-
 
 x--
 
@@ -224,23 +220,21 @@ public class Geld
 }
 ```
 - kann nicht verändert werden
-- ungültige Geld Objekte gibt es nicht
-
-Note: Waehrung ist eine Enum
-TODO Example Code
+- ungültige Geld Objekte nicht möglich
 
 x---
 
-```csharp
+<pre>
+<code data-noescape data-trim class="lang-csharp hljs">
 [Fact]
 public void Geld_ist_gleich_Geld()
 {
     var geld1 = new Geld(1, Waehrung.EUR);
     var geld2 = new Geld(1, Waehrung.EUR);
 
-    geld1.Should().BeEqualTo(geld2); // <-- Fails!
+    <span class="mycodemark-always">geld1.Should().BeEqualTo(geld2); // <-- Fails!</span>
 }
-```
+</code></pre>
 
 **AUTSCH!**
 
@@ -483,11 +477,40 @@ public class BonusPunkte : ValueObject<BonusPunkte>
 
 x--
 
-Oder ein **`Maybe`** oder **`Option`** Datentyp verwenden
+- Vorteil: Signaturen bleiben "ehrlich"
+- Nachteil: lästige NullChecks<!-- .element: class="fragment" data-fragment-index="1" -->
+    - Abhilfe: **`Maybe`** oder **`Option`** Datentyp verwenden<!-- .element: class="fragment" data-fragment-index="1" -->
+    - noch kein C# Sprachfeature, aber Bibliotheken vorhanden
+
+<pre>
+<code data-noescape data-trim class="lang-csharp hljs fragment" data-fragment-index="1">
+public Maybe&lt;int&gt; Punkte { get; }
+</code></pre>
+
+x---
+
+## Erweiterbar...
 
 ```csharp
-public Maybe<int> Punkte { get; } = null;
+public class CompanyEmail
+{
+    public CompanyEmail(Email mail) // <-- "Email" ist ein Value Object
+    {
+        if (!IsValid(mail))
+        {
+            throw new InvalidCompanyEmailException(mail.Value);
+        }
+
+        Value = mail;
+    }
+
+    public Email Value { get; }
+
+    private bool IsValid(Email mail) => 
+        mail.Value.EndsWith("companyname.com");
+}
 ```
+"Composition over Inheritance"
 
 x---
 
@@ -557,30 +580,6 @@ x---
 
 ![noborder-no-gravity](resources/draw.io/output/center-of-gravity-fail0.png)
 
-x---
-
-## Erweiterbar...
-
-```csharp
-public class CompanyEmail
-{
-    public CompanyEmail(Email mail) // <-- "Email" ist ein Value Object
-    {
-        if (!IsValid(mail))
-        {
-            throw new InvalidCompanyEmailException(mail.Value);
-        }
-
-        Value = mail;
-    }
-
-    public Email Value { get; }
-
-    private bool IsValid(Email mail) => 
-        mail.Value.EndsWith("companyname.com");
-}
-```
-"Composition over Inheritance"
 
 x---
 
@@ -646,12 +645,21 @@ public class Zeitspanne
 
 x--
 
-Davor:
+```csharp
+public class TodoRepository 
+{
+  public IEnumerable<Todo> GetTodosInnerhalbVon(Zeitspanne zeitspanne) 
+      => Todos.Where(x => zeitspanne.Umfasst(x.ErstelltAm));
+}
+```
+
+vs
 
 ```csharp
 public class TodoRepository
 {
-    public IEnumerable<Todo> GetTodosBetween(DateTime from, DateTime to) {
+    public IEnumerable<Todo> GetTodosBetween(DateTime from, DateTime to) 
+    {
         if (from <= to) {
             throw new InvalidDateRangeException();
         }
@@ -661,17 +669,6 @@ public class TodoRepository
     }
 }
 ```
-
-Danach:
-
-```csharp
-public class TodoRepository
-{
-  public IEnumerable<Todo> GetTodosInnerhalbVon(Zeitspanne zeitspanne) 
-      => Todos.Where(x => zeitspanne.Umfasst(x.ErstelltAm));
-}
-```
-
 
 x---
 
@@ -690,6 +687,15 @@ x---
     - Methoden dürfen nie den Zustand ändern
 - Vergleichbarkeit
     - Equals / Hashcode überschreiben
+
+x---
+
+## Value Object
+
+- **Expressiveness** "ehrliche" Methodensignaturen
+- **Immutability**
+- **Equality by structure**
+- **Encapsulation** Logik ist da wo sie hingehört
 
 x---
 
