@@ -16,6 +16,9 @@ x---
 - C# Entwickler bei Redheads Ltd.
 - aktuelle Schwerpunkte: DDD, FP, Cloud
 - Softwerkskammer
+<!-- 
+![redheads-logo](resources/Redheads_Logo.png)
+![portrait](resources/portrait.jpg) -->
 
 Note: 
 Wo geht die Reise hin?
@@ -557,19 +560,19 @@ x---
 
 x---
 
-![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity6.png)
-
-x--
-
-![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity5.png)
-
-x--
-
-![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity4.png)
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity0.png)
 
 x--
 
 ![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity1.png)
+
+x--
+
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity2.png)
+
+x--
+
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity3.png)
 
 x--
 
@@ -578,7 +581,7 @@ https://vimeo.com/13549100
 
 x---
 
-![noborder-no-gravity](resources/draw.io/output/center-of-gravity-fail0.png)
+![noborder-no-gravity](resources/draw.io/output/no-gravity2.png)
 
 
 x---
