@@ -5,9 +5,9 @@ Patrick Drechsler
 
 `#dwx2018`
 
-- <i class="fa fa-calendar" aria-hidden="true"></i> 25.06.2018
-- <i class="fa fa-twitter" aria-hidden="true"></i> @drechsler
-- <i class="fa fa-github" aria-hidden="true"></i> draptik
+<i class="fa fa-calendar" aria-hidden="true"></i> 25.06.2018&nbsp;&nbsp;&nbsp;&nbsp;
+<i class="fa fa-twitter" aria-hidden="true"></i> @drechsler&nbsp;&nbsp;&nbsp;&nbsp;
+<i class="fa fa-github" aria-hidden="true"></i> draptik
 
 x---
 
@@ -184,38 +184,20 @@ x--
 [Fact]
 public void Geld_laesst_sich_addieren()
 {
-    var geldEins = new Geld(1);
-    var geldZwei = new Geld(10);
+    var geld1 = new Geld(1);
+    var geld2 = new Geld(10);
 
-    geldEins
-        .Add(geldZwei).Betrag
-        .Should()
-        .Be(11);
+    var geld3 = geld1.Add(geld2); // geld1, geld2 werden nicht verändert
+
+    geld3.Betrag.Should().Be(11);
 }
 ```
 
 x---
 
-Geld ist mehr als nur Betrag
+Geld ist mehr als nur **Betrag**
 
-```csharp
-public class UeberweisungsService
-{
-    public void Ueberweise(
-        string kontoSender, 
-        string kontoEmpfaenger, 
-        int geld)
-    {
-        // ...
-    }
-}
-
-
-```
-
-![noborder-currencies](resources/currencies.png)<!-- .element: class="fragment" data-fragment-index="1" -->
-
-x---
+![noborder-currencies](resources/currencies.png)
 
 Fügen wir **Währung** zur Klasse **Geld** hinzu...
 
@@ -260,7 +242,7 @@ public void Geld_ist_gleich_Geld()
 }
 ```
 
-AUTSCH!
+**AUTSCH!**
 
 Da müssen wir was machen
 
@@ -329,8 +311,8 @@ x---
 
 ### "Geld" ist jetzt stabil
 
-- "Geld" ist nicht im nachhinein änderbar
-- "Geld" ist vergleichbar
+- "Geld" ist **nicht** im nachhinein **änderbar**
+- "Geld" ist **vergleichbar**
 
 x---
 
@@ -344,12 +326,10 @@ x---
 
 ## Value Object
 
-- Ausdrucksstark (*"Expressiveness"*)
-    - Methodensignaturen sind verständlich
-- Unveränderlich (*"Immutability"*)
-- Attributbasierte Vergleichbarkeit (*"Equality by structure"*)
-- Logik ist da wo sie hingehört (*"Encapsulation"*)
-
+- **"Expressiveness"** Methodensignaturen lügen nicht
+- **"Immutability"**
+- **"Equality by structure"**
+- **"Encapsulation"** Logik ist da wo sie hingehört
 
 x---
 
@@ -364,11 +344,33 @@ Entscheidung ist immer kontextabhängig!<!-- .element: class="fragment" data-fra
 
 x---
 
+Hilfsklasse **ValueObject&lt;T&gt;**
+
 ```csharp
-public class Konto
+public abstract class ValueObject<T> where T : ValueObject<T>
 {
-    public Geld Kontostand { /* ... */ };
-    public Email KontaktEmail { /* ... */ } // <-- neues Value Object
+    public override bool Equals(object other) {    // <-- 1
+        return Equals(other as T);
+    }
+
+    protected abstract IEnumerable<object> 
+        GetAttributesToIncludeInEqualityCheck();  // <-- 2
+
+    public bool Equals(T other) {                 // <-- 3
+        if (other == null) return false;
+
+        return GetAttributesToIncludeInEqualityCheck()
+            .SequenceEqual(
+                other.GetAttributesToIncludeInEqualityCheck());
+    }
+
+    public override int GetHashCode() {            // <-- 4
+        var hash = 17;
+        foreach (var obj in GetAttributesToIncludeInEqualityCheck())
+            hash = hash * 31 + (obj == null ? 0 : obj.GetHashCode());
+
+        return hash;
+    }
 }
 ```
 
@@ -397,42 +399,6 @@ public class Email : ValueObject<Email>
 }
 ```
 
-Note: Wo kommt die `ValueObject<T>` Klasse her?
-
-x---
-
-```csharp
-public abstract class ValueObject<T> where T : ValueObject<T>
-{
-    public override bool Equals(object other)     // <-- 1
-    {
-        return Equals(other as T);
-    }
-
-    protected abstract IEnumerable<object> 
-        GetAttributesToIncludeInEqualityCheck();  // <-- 2
-
-    public bool Equals(T other)                   // <-- 3
-    {
-        if (other == null) return false;
-
-        return GetAttributesToIncludeInEqualityCheck()
-            .SequenceEqual(
-                other.GetAttributesToIncludeInEqualityCheck());
-    }
-
-    public override int GetHashCode()             // <-- 4
-    {
-        var hash = 17;
-        foreach (var obj in GetAttributesToIncludeInEqualityCheck())
-            hash = hash * 31 + (obj == null ? 0 : obj.GetHashCode());
-
-        return hash;
-    }
-}
-
-```
-
 x--
 
 ### Sugar: Operator overloading
@@ -440,7 +406,7 @@ x--
 ```csharp
 public abstract class ValueObject<T> where T : ValueObject<T>
 {
-    //...
+    //... Achtung: FiraCode ;-)
     public static bool operator ==(ValueObject<T> left, 
                                    ValueObject<T> right)
     {
@@ -454,6 +420,12 @@ public abstract class ValueObject<T> where T : ValueObject<T>
     }
 }
 ```
+
+x--
+
+FiraCode
+
+![funy-equality-by-reference](resources/firacode.png)
 
 x--
 
@@ -509,6 +481,14 @@ public class BonusPunkte : ValueObject<BonusPunkte>
 }
 ```
 
+x--
+
+Oder ein **`Maybe`** oder **`Option`** Datentyp verwenden
+
+```csharp
+public Maybe<int> Punkte { get; } = null;
+```
+
 x---
 
 ## FAQ
@@ -518,8 +498,7 @@ x---
 - Wann sollte man statt eines Basistyps ein VO einsetzen?
     - Sobald Geschäftslogik im Spiel ist (z.B. Validierung)<!-- .element: class="fragment" data-fragment-index="2" -->
 - Funktionieren VOs auch mit meinem OR-Mapper?<!-- .element: class="fragment" data-fragment-index="3" -->
-- Wann sollte man VOs vermeiden?<!-- .element: class="fragment" data-fragment-index="4" -->
-    - Bei Collections von VOs sollte man aufpassen
+    - Ja
 
 x---
 
@@ -555,33 +534,28 @@ x---
 
 x---
 
-![noborder-center-of-gravity](resources/center-of-gravity0.png)
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity6.png)
 
-x---
+x--
 
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity5.png)
 
-![noborder-center-of-gravity](resources/center-of-gravity.png)
+x--
 
-x---
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity4.png)
 
-![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity.png)
-
-x---
+x--
 
 ![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity1.png)
 
-Notes:
+x--
+
 Dan Bergh Johnsson: The Power of Value - Power Use of Value Objects in Domain Driven Design
 https://vimeo.com/13549100
 
 x---
 
-![noborder-fuck-gravity](resources/draw.io/output/center-of-gravity2.png)
-
-
-x---
-
-![noborder-fuck-gravity](resources/draw.io/output/center-of-gravity3.png)
+![noborder-no-gravity](resources/draw.io/output/center-of-gravity-fail0.png)
 
 x---
 
@@ -663,8 +637,7 @@ noch **mehr Fachlichkeit** ins Objekt packen
 ```csharp
 public class Zeitspanne
 {
-    public bool Umfasst<T>(T t) where T : IHaveErstelltAm  => 
-        t.ErstelltAm >= Von && t.ErstelltAm <= Bis;
+    public bool Umfasst(DateTime d) => d >= Von && d <= Bis;
 
     //...
 }
@@ -673,22 +646,12 @@ public class Zeitspanne
 
 x--
 
-```csharp
-public class TodoRepository
-{
-  public IEnumerable<Todo> GetTodosInnerhalbVon(Zeitspanne zeitspanne) 
-      => Todos.Where(x => zeitspanne.Umfasst(x));
-  // ...
-}
-```
-
-vs
+Davor:
 
 ```csharp
 public class TodoRepository
 {
-    public IEnumerable<Todo> GetTodosBetween(DateTime from, DateTime to)
-    {
+    public IEnumerable<Todo> GetTodosBetween(DateTime from, DateTime to) {
         if (from <= to) {
             throw new InvalidDateRangeException();
         }
@@ -696,9 +659,19 @@ public class TodoRepository
         return Todos.Where(x => 
             x.ErstelltAm >= from && x.ErstelltAm <= to);
     }
-    // ...
 }
 ```
+
+Danach:
+
+```csharp
+public class TodoRepository
+{
+  public IEnumerable<Todo> GetTodosInnerhalbVon(Zeitspanne zeitspanne) 
+      => Todos.Where(x => zeitspanne.Umfasst(x.ErstelltAm));
+}
+```
+
 
 x---
 
@@ -718,8 +691,6 @@ x---
 - Vergleichbarkeit
     - Equals / Hashcode überschreiben
 
-TODO: Download full screen post-it note background / implement in css?
-
 x---
 
 ## Zusammenfassung
@@ -730,8 +701,6 @@ x---
     - `->` verständlich
     - `->` weniger denken
     - `->` einfach testbar
-
-Note: Fragen?
 
 x---
 
