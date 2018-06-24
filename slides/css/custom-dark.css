@@ -69,6 +69,12 @@ img[alt^=funx-] {
     height: 550px;
 }
 
+img[alt^=funy-] {
+    height: 500px;
+    border: none !important;
+    box-shadow: none !important;
+}
+
 img[alt^=fullscreen-] {
     width: 100%;
 }
