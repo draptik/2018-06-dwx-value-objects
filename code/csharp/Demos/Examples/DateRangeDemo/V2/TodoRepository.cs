@@ -13,6 +13,6 @@ namespace Examples.DateRangeDemo.V2
         };
 
         public IEnumerable<Todo> GetTodosInnerhalbVon(Zeitspanne zeitspanne) => 
-            Todos.Where(zeitspanne.Umfasst);
+            Todos.Where(x => zeitspanne.Umfasst(x.ErstelltAm));
     }
 }

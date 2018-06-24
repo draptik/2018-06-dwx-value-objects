@@ -20,8 +20,6 @@ namespace Examples.DateRangeDemo.V2
 
         private bool IsValid(DateTime von, DateTime bis) => von < bis;
 
-        public bool Umfasst<THasErstelltAm>(THasErstelltAm o) 
-            where THasErstelltAm : IHaveErstelltAm  => 
-            o.ErstelltAm >= Von && o.ErstelltAm <= Bis;
+        public bool Umfasst(DateTime d) => d >= Von && d <= Bis;
     }
 }

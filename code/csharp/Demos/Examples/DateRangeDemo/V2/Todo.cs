@@ -2,7 +2,7 @@ using System;
 
 namespace Examples.DateRangeDemo.V2
 {
-    public class Todo : IHaveErstelltAm
+    public class Todo
     {
         public string Name { get; set; }
 
