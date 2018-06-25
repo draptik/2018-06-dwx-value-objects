@@ -18,6 +18,12 @@
 
 .reveal .slides section .mycodemark-always {
     font-weight: bold;
+    background-color: rgba(139, 0, 0, 0.4);
+    /* border-style: solid;
+    border-color: red;
+    border-width: 2px;
+    border-radius: 5px;
+    padding: 3px; */
 }
 
 .reveal .slides section .mycodemark-highlight .hljs-comment {
