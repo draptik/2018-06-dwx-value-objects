@@ -16,8 +16,8 @@ x---
 - C# Entwickler bei Redheads Ltd.
 - aktuelle Schwerpunkte: DDD, FP, Cloud
 - Softwerkskammer
-<!-- 
-![redheads-logo](resources/Redheads_Logo.png)
+
+<!-- ![redheads-logo](resources/Redheads_Logo.png)
 ![portrait](resources/portrait.jpg) -->
 
 Note: 
@@ -458,16 +458,18 @@ x---
 
 ## Optionale Value Objects
 
-```csharp
+<pre>
+<code data-noescape data-trim class="lang-csharp hljs fragment" data-fragment-index="1">
 public class BahnKunde
 {
     // Optional
     public BonusPunkte BonusPunkte { get; } = new BonusPunkte(null);
 }
-```
+</code></pre>
 
-```csharp
-public class BonusPunkte : ValueObject<BonusPunkte>
+<pre>
+<code data-noescape data-trim class="lang-csharp hljs fragment" data-fragment-index="2">
+public class BonusPunkte : ValueObject&lt;BonusPunkte&gt;
 {
     public int Punkte { get; } = 0;
 
@@ -479,7 +481,7 @@ public class BonusPunkte : ValueObject<BonusPunkte>
             : punkte > 0;
     }
 }
-```
+</code></pre>
 
 x--
 
