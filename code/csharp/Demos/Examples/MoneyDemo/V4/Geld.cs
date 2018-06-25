@@ -1,14 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Examples;
 
 
 namespace Examples.MoneyDemo.V4
 {
-
-    // TODO Replace int with decimal
-    // TODO Add formatting (ToString), culture specific
-    // TODO Add division and multiplication
-    public class Geld
+    public class Geld : ValueObject<Geld>
     {
         public int Value { get; }
 
@@ -57,6 +54,11 @@ namespace Examples.MoneyDemo.V4
 
         private bool IsValid(int betrag, Waehrung waehrung)
             => betrag >= 0 && waehrung != Waehrung.Undefined;
+
+        protected override IEnumerable<object> GetAttributesToIncludeInEqualityCheck()
+        {
+            return new List<object> {Value, Waehrung};
+        }
     }
 
 }

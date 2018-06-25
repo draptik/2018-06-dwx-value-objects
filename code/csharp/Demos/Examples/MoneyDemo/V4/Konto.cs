@@ -1,6 +1,8 @@
+using System.Collections.Generic;
+
 namespace Examples.MoneyDemo.V4
 {
-    public class Konto
+    public class Konto : ValueObject<Konto>
     {
         public Geld Kontostand { get; private set; } = new Geld(0, Waehrung.EUR);
 
@@ -19,6 +21,11 @@ namespace Examples.MoneyDemo.V4
         {
             var abgehobenesGeld = Abheben(geld);
             empfaengerKonto.Einzahlen(abgehobenesGeld);
+        }
+
+        protected override IEnumerable<object> GetAttributesToIncludeInEqualityCheck()
+        {
+            return new List<object> {Kontostand};
         }
     }
 }

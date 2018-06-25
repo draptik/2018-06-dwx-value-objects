@@ -41,5 +41,19 @@ namespace Examples.Tests.DateRangeDemo.V2
 
             sut.Umfasst(actual).Should().Be(expected);
         }
+
+        [Theory]
+        [InlineData(2018, 1, 01, 2018, 01, 01)]
+        public void Vergleichbarkeit_passt(
+            int fromYear,   int fromMonth,   int fromDay,
+            int toYear,     int toMonth,     int toDay
+            )
+        {
+            var von    = new DateTime(fromYear,   fromMonth,   fromDay);
+            var bis    = new DateTime(toYear,     toMonth,     toDay);
+            
+            von.Equals(bis).Should().BeTrue();
+            (von == bis).Should().BeTrue();
+        }
     }
 }
