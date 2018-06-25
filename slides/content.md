@@ -428,28 +428,31 @@ x--
 
 ### More Sugar: implicit operator
 
-```csharp
+<pre>
+<code data-noescape data-trim class="lang-csharp hljs">
 var email = new Email("foo@bar.baz");
-string s = email.Value;                   // <-- nervt auf Dauer...
-```
+<span class="mycodemark-always">string s = email.Value;</span>                   // <-- nervt auf Dauer...
+</code></pre>
 
-```csharp
+<pre>
+<code data-noescape data-trim class="lang-csharp hljs">
 public class Email : ValueObject<Email>
 {
     public string Value { get; }
 
     //...
-    public static implicit operator string(Email mail)
+    <span class="mycodemark-always">public static implicit operator string(Email mail)</span>
     {
         return mail.Value.ToString();
     }
 }
-```
+</code></pre>
 
-```csharp
+<pre>
+<code data-noescape data-trim class="lang-csharp hljs">
 var email = new Email("foo@bar.baz");
-string s = email;                         // <-- einfacher
-```
+<span class="mycodemark-always">string s = email;</span>                         // <-- einfacher
+</code></pre>
 
 x---
 
@@ -494,10 +497,11 @@ x---
 
 ## Erweiterbar...
 
-```csharp
+<pre>
+<code data-noescape data-trim class="lang-csharp hljs fragment" data-fragment-index="1">
 public class CompanyEmail
 {
-    public CompanyEmail(Email mail) // <-- "Email" ist ein Value Object
+    public CompanyEmail(<span class="mycodemark-always">Email mail</span>) // <-- "Email" ist ein Value Object
     {
         if (!IsValid(mail))
         {
@@ -512,7 +516,8 @@ public class CompanyEmail
     private bool IsValid(Email mail) => 
         mail.Value.EndsWith("companyname.com");
 }
-```
+</code></pre>
+
 "Composition over Inheritance"
 
 x---
@@ -556,44 +561,29 @@ x--
 
 x---
 
-# on Steroids
+**Weniger Boilerplate mit F# "Record Types"**
 
-x---
-
-![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity0.png)
-
-x--
-
-![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity1.png)
-
-x--
-
-![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity2.png)
-
-x--
-
-![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity3.png)
-
-x--
-
-Dan Bergh Johnsson: The Power of Value - Power Use of Value Objects in Domain Driven Design
-https://vimeo.com/13549100
-
-x---
-
-![noborder-no-gravity](resources/draw.io/output/no-gravity2.png)
-
+```fsharp
+type Geld = { 
+    betrag: int 
+    waehrung: Waehrung 
+}
+```
+- Out of the box:
+    - ...Immutability
+    - ...Structural equality
 
 x---
 
 ## Nicht nur für Entitäten nützlich
 
-```csharp
+<pre>
+<code data-noescape data-trim class="lang-csharp hljs fragment" data-fragment-index="1">
 public class TodoRepository
 {
-    private IEnumerable<Todo> Todos { get; }
+    private IEnumerable&lt;Todo&gt; Todos { get; }
 
-    public IEnumerable<Todo> GetTodosBetween(DateTime from, DateTime to)
+    public IEnumerable&lt;Todo&gt; <span class="mycodemark-always">GetTodosBetween(DateTime from, DateTime to)</span>
     {
         if (from <= to)
         {
@@ -604,7 +594,7 @@ public class TodoRepository
             x.ErstelltAm >= from && x.ErstelltAm <= to);
     }
 }
-```
+</code></pre>
 
 Logik kann extrahiert werden
 
@@ -675,6 +665,35 @@ public class TodoRepository
 
 x---
 
+# on Steroids
+
+x---
+
+Dan Bergh Johnsson: The Power of Value - Power Use of Value Objects in Domain Driven Design
+https://vimeo.com/13549100
+
+x---
+
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity0.png)
+
+x--
+
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity1.png)
+
+x--
+
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity2.png)
+
+x--
+
+![noborder-center-of-gravity](resources/draw.io/output/center-of-gravity3.png)
+
+x---
+
+![noborder-no-gravity](resources/draw.io/output/no-gravity2.png)
+
+x---
+
 ## Demos
 
 Money, DateRange, Mail
@@ -712,6 +731,8 @@ x---
     - `->` einfach testbar
 
 x---
+
+# Danke!
 
 - <i class="fa fa-twitter" aria-hidden="true"></i> @drechsler
 - <i class="fa fa-github" aria-hidden="true"></i> github.com/draptik
